@@ -1,0 +1,31 @@
+{
+  "name": "mynodes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "async": "^3.1.0",
+    "benchmark": "^2.1.4",
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "eventproxy": "^1.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "istanbul": "^0.4.5",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.4.1",
+    "node-jsencrypt": "^1.0.0",
+    "superagent": "^5.1.0",
+    "utility": "^1.16.1"
+  },
+  "devDependencies": {
+    "should": "^13.2.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
