@@ -8,8 +8,9 @@ const client = new MongoClient(url, { useUnifiedTopology: true });
 const bodyParser = require('body-parser');
 const JwtUtil = require('./jwt');
 const JSEncrypt = require('node-jsencrypt');
-var cors = require("cors");
+const cors = require("cors");
 const { sendError, sendCorrect } = require('./confings/utilities');
+const { goodsData } = require('./datas/goods');
 app.use(cors(), bodyParser());
 app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -148,6 +149,70 @@ app.post('/login', (req, res, next) => {
   // let jsencrypt = new JSEncrypt()
   // jsencrypt.setPrivateKey(prvKey)
   // let password = jsencrypt.decrypt(req.body.password);
+})
+
+// 创建货品列表假数据
+app.get('/createFalseData', (req, res, next) => {
+  client.connect((err,client) => {
+    if(!err) {
+      const collection = client.db('test').collection('goods');
+      const data = { ...goodsData }
+      collection.insertOne(data, (err, result) => {
+        if(!err) {
+          res.send(sendCorrect('创建成功'));
+        } else {
+          res.send(sendError('创建失败', err));
+        }
+      })
+    } else {
+      res.send(sendError('创建失败'));
+    }
+  })
+})
+// 获取货品信息
+app.get('/getGoodsData', (req, res, next) => {
+  client.connect((err, client) => {
+    if(!err) {
+      const query = req.query
+      const obj = {}
+      if(!query.PageSize) {
+        res.send(sendError('PageSize必传'));
+        return
+      }
+      if(!query.PageIndex) {
+        res.send(sendError('PageIndex必传'));
+        return
+      }
+      if(query.BillNumber && query.BillNumber != '') {
+        obj.BillNumber = query.BillNumber
+      }
+      if(query.Supplier && query.Supplier != '') {
+        obj.Supplier = query.Supplier
+      }
+      if(query.SourceType && query.SourceType != '') {
+        obj.SourceType = query.SourceType
+      }
+      if(query.CreateTime && query.CreateTime != '') {
+        obj.CreateTime = query.CreateTime
+      }
+      if(query.PurchaseCost && query.PurchaseCost != '') {
+        obj.PurchaseCost = query.PurchaseCost
+      }
+      if(query.PurchaseNumber && query.PurchaseNumber != '') {
+        obj.PurchaseNumber = query.PurchaseNumber
+      }
+      if(query.CheckTime && query.CheckTime != '') {
+        obj.CheckTime = query.CheckTime
+      }
+      if(query.State && (query.State != '' || query.State != 0)) {
+        obj.State = query.State
+      }
+      const collection = client.db('test').collection('goods');
+      collection.find(obj).skip((query.PageIndex - 1) * query.PageSize).limit(Number(query.PageSize)).toArray((err, items) => {
+        res.send(sendCorrect('', items))
+      })
+    }
+  })
 })
 
 app.get('/getHupuData', (req, res, next) => {
