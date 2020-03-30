@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const MongoClient = require('mongodb').MongoClient;
+const url = 'mongodb://localhost:27017/runoob';
+const client = new MongoClient(url, { useUnifiedTopology: true });
 const { sendError, sendCorrect } = require('../confings/utilities');
+const { goodsData, accountList, accountDeteil } = require('../datas/goods');
+
 // 创建电子钱包账户列表数据
 router.get('/createAccountList', (req, res, next) => {
   client.connect((err,clients) => {
@@ -24,24 +29,62 @@ router.get('/createAccountList', (req, res, next) => {
   })
 })
 
+/**
+ * @api {get} /clearing/getAccountList 电子钱包列表
+ * @apiName /clearing/getAccountList/
+ * @apiGroup User
+ *
+ * @apiParam {String} CapitalCode 资金账号
+ * @apiParam {String} AccountName 户名
+ * @apiParam {String} BankEcode 银行电子账号
+ * @apiParam {String} LastOpenTime 开户时间
+ * @apiParam {String} CharacterType 商户类型(枚举)
+ * @apiParam {String} CompanyCode 公司编码
+ * @apiParam {String} CompanyName 公司名称
+ * @apiParam {String} StoreCode 门店编码
+ * @apiParam {String} StoreName 门店名称
+ * @apiParam {String} State 账户状态
+ * @apiParam {String} PageSize *分页条数
+ * @apiParam {String} PageIndex *分页索引
+ * @apiParam {String} OrderBy *排序字段(1: 最后操作时间 2: 资金账号)
+ * @apiParam {String} IsAsced *是否升序(1: 正序 3: 倒序)
+ * 
+ * @apiSuccess {String} CapitalCode 资金账号
+ * @apiSuccess {String} AccountName 户名
+ * @apiSuccess {String} BankEcode 银行电子账号
+ * @apiSuccess {String} LastOpenTime 开户时间
+ * @apiSuccess {String} CharacterType 商户类型(枚举)
+ * @apiSuccess {String} CompanyCode 公司编码
+ * @apiSuccess {String} CompanyName 公司名称
+ * @apiSuccess {String} StoreCode 门店编码
+ * @apiSuccess {String} StoreName 门店名称
+ * @apiSuccess {Number} SubSumed 账户余额(总金额)
+ * @apiSuccess {Number} BaseSumed 账户余额(基本账户)
+ * @apiSuccess {Number} OpSumed 账户余额(运营账户)
+ * @apiSuccess {Number} SubValid 可用金额(总金额)
+ * @apiSuccess {Number} BaseValid 可用金额(基本账户)
+ * @apiSuccess {Number} OpValid 可用金额(运营账户)
+ * @apiSuccess {Number} SubLock 锁定金额(总金额)
+ * @apiSuccess {Number} BaseLock 锁定金额(基本账户)
+ * @apiSuccess {Number} OpLock 锁定金额(运营账户)
+ * @apiSuccess {Number} State 账户状态(枚举)
+ * 
+ */
+
 // 获取电子钱包账户列表数据
 router.get('/getAccountList', (req, res, next) => {
   const query = req.query
   if(!query.OrderBy) {
-    res.send(sendError('OrderBy必传'));
-    return
+    return res.send(sendError('OrderBy必传'));
   }
   if(!query.IsAsced) {
-    res.send(sendError('IsAsced必传'));
-    return
+    return res.send(sendError('IsAsced必传'));
   }
   if(!query.PageSize) {
-    res.send(sendError('PageSize必传'));
-    return
+    return res.send(sendError('PageSize必传'));
   }
   if(!query.PageIndex) {
-    res.send(sendError('PageIndex必传'));
-    return
+    return res.send(sendError('PageIndex必传'));
   }
   client.connect((err, client) => {
     if(!err) {
@@ -82,6 +125,51 @@ router.get('/getAccountList', (req, res, next) => {
       })
     }
   })
+})
+
+/**
+ * @api {get} /clearing/getAccountList 电子钱包列表
+ * @apiName /clearing/getAccountList/
+ * @apiGroup User
+ *
+ * @apiParam {String} CapitalCode 资金账号
+ * @apiParam {String} AccountName 户名
+ * @apiParam {String} BankEcode 银行电子账号
+ * @apiParam {String} LastOpenTime 开户时间
+ * @apiParam {String} CharacterType 商户类型(枚举)
+ * @apiParam {String} CompanyCode 公司编码
+ * @apiParam {String} CompanyName 公司名称
+ * @apiParam {String} StoreCode 门店编码
+ * @apiParam {String} StoreName 门店名称
+ * @apiParam {String} State 账户状态
+ * @apiParam {String} PageSize *分页条数
+ * @apiParam {String} PageIndex *分页索引
+ * @apiParam {String} OrderBy *排序字段(1: 最后操作时间 2: 资金账号)
+ * @apiParam {String} IsAsced *是否升序(1: 正序 3: 倒序)
+ * 
+ * @apiSuccess {String} CapitalCode 资金账号
+ * @apiSuccess {String} AccountName 户名
+ * @apiSuccess {String} BankEcode 银行电子账号
+ * @apiSuccess {String} LastOpenTime 开户时间
+ * @apiSuccess {String} CharacterType 商户类型(枚举)
+ * @apiSuccess {String} CompanyCode 公司编码
+ * @apiSuccess {String} CompanyName 公司名称
+ * @apiSuccess {String} StoreCode 门店编码
+ * @apiSuccess {String} StoreName 门店名称
+ * @apiSuccess {Number} SubSumed 账户余额(总金额)
+ * @apiSuccess {Number} BaseSumed 账户余额(基本账户)
+ * @apiSuccess {Number} OpSumed 账户余额(运营账户)
+ * @apiSuccess {Number} SubValid 可用金额(总金额)
+ * @apiSuccess {Number} BaseValid 可用金额(基本账户)
+ * @apiSuccess {Number} OpValid 可用金额(运营账户)
+ * @apiSuccess {Number} SubLock 锁定金额(总金额)
+ * @apiSuccess {Number} BaseLock 锁定金额(基本账户)
+ * @apiSuccess {Number} OpLock 锁定金额(运营账户)
+ * @apiSuccess {Number} State 账户状态(枚举)
+ * 
+ */
+router.get('/getAccountAdmin', (req, res, next) => {
+
 })
 
 module.exports = router
