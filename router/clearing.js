@@ -38,7 +38,7 @@ router.get('/createAccountList', (req, res, next) => {
  * @apiParam {String} AccountName 户名
  * @apiParam {String} BankEcode 银行电子账号
  * @apiParam {String} LastOpenTime 开户时间
- * @apiParam {String} CharacterType 商户类型(枚举)
+ * @apiParam {String} CharacterType 商户类型(枚举 CharacterType)
  * @apiParam {String} CompanyCode 公司编码
  * @apiParam {String} CompanyName 公司名称
  * @apiParam {String} StoreCode 门店编码
@@ -53,7 +53,7 @@ router.get('/createAccountList', (req, res, next) => {
  * @apiSuccess {String} AccountName 户名
  * @apiSuccess {String} BankEcode 银行电子账号
  * @apiSuccess {String} LastOpenTime 开户时间
- * @apiSuccess {String} CharacterType 商户类型(枚举)
+ * @apiSuccess {String} CharacterType 商户类型(枚举 CharacterType)
  * @apiSuccess {String} CompanyCode 公司编码
  * @apiSuccess {String} CompanyName 公司名称
  * @apiSuccess {String} StoreCode 门店编码
@@ -67,7 +67,8 @@ router.get('/createAccountList', (req, res, next) => {
  * @apiSuccess {Number} SubLock 锁定金额(总金额)
  * @apiSuccess {Number} BaseLock 锁定金额(基本账户)
  * @apiSuccess {Number} OpLock 锁定金额(运营账户)
- * @apiSuccess {Number} State 账户状态(枚举)
+ * @apiSuccess {Number} State 账户状态(枚举 EwalletMasterState)
+ * @apiSuccess {Number} EwalletType 账户类型(枚举 EwalletMasterEwalletType) 
  * 
  */
 

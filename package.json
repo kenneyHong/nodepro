@@ -17,6 +17,7 @@
     "istanbul": "^0.4.5",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.4.1",
+    "mongoose": "^5.9.7",
     "node-jsencrypt": "^1.0.0",
     "nodemon": "^2.0.2",
     "superagent": "^5.1.0",

@@ -3,21 +3,25 @@ const fs = require('fs');
 const router = express.Router();
 const JSEncrypt = require('node-jsencrypt');
 const { sendError, sendCorrect } = require('../confings/utilities');
-const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017/runoob';
 const JwtUtil = require('../jwt');
-const client = new MongoClient(url, { useUnifiedTopology: true });
+const User = require('../db/model/userModel')
+
 // 查找用户表
 const findUser = (data) => {
   return new Promise((resolve, reject) => {
-    client.connect((err,client) => {
-      const collection = client.db('test').collection('users');
-      collection.find(data).toArray(function(err, items) {
-        if(err) {
-          reject(err)
-        } else {
-          resolve(items)
-        }
+    User.find(data).then((items) => {
+      resolve(items)
+    }).catch(err => {
+      reject(err)
+    })
+    // client.connect((err,client) => {
+    //   const collection = client.db('test').collection('users');
+    //   collection.find(data).toArray(function(err, items) {
+    //     if(err) {
+    //       reject(err)
+    //     } else {
+    //       resolve(items)
+    //     }
         // if(items.length == 0) {
         //   res.send(sendError('账号或者密码错误'));
         // } else {
@@ -33,8 +37,8 @@ const findUser = (data) => {
         //     res.send(sendError('账号或者密码错误'));
         //   }
         // }
-      })
-    });
+  //     })
+  //   });
   })
 }
 /**
@@ -65,12 +69,13 @@ router.post('/registered', function(req, res, next) {
       const jsencrypt = new JSEncrypt()
       jsencrypt.setPrivateKey(prvKey)
       const password = jsencrypt.decrypt(req.body.password);
-      collection.insertOne({name: req.body.name, password}, (err, result) => {
+      User.insertMany({name: req.body.name, password}).then(() => {
         const jwt = new JwtUtil(req.body.name);
         const token = jwt.generateToken();
         res.send(sendCorrect('注册成功', { token }))
-        client.close()
-      });
+      }).catch(() => {
+        res.send(sendError('注册失败'))
+      })
     } else {
       res.send(sendError('注册失败,改用户已存在'));
     }
