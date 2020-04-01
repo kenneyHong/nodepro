@@ -14,5 +14,6 @@ function sendMessage( mes, err, data = null) {
 }
 module.exports = {
   sendError,
-  sendCorrect
+  sendCorrect,
+  sendMessage
 }

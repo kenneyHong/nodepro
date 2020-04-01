@@ -13,11 +13,15 @@ var walletSchema = new mongoose.Schema({
   AccountName: {
     type: String,
     required: true
-  },
+  }, // 户名
   LastOpenTime: {
     type: Number,
     default: new Date().getTime()
-  },
+  }, // 开通时间
+  CreateTime: {
+    type: Number,
+    default: new Date().getTime()
+  }, // 创建时间
   BankEcode: {
     type: String,
     default: '123444422221'
@@ -49,13 +53,13 @@ var walletSchema = new mongoose.Schema({
   ProvinceId: {
     type: String
   }, // 省编号
-  ProvinceId: {
+  CityId: {
     type: String
   }, // 市编号
   ProvinceId: {
     type: String
   }, // 区编号
-  ProvinceName: {
+  TownName: {
     type: String
   }, // 省
   CityName: {
@@ -82,7 +86,7 @@ var walletSchema = new mongoose.Schema({
   CharacterType: {
     type: Number,
     default: 2101,
-  },
+  }, // 商户类型
   CompanyCode: {
     type: String
   },
@@ -102,8 +106,9 @@ var walletSchema = new mongoose.Schema({
     type: String
   }, // 审核人
   TuneOrderState: {
-    type: String
+    type: String,
+    default: '3'
   } // 申请单状态(枚举 TunePetitionOrderBasicState)
 })
-var Wallets = mongoose.model('wallets', walletSchema)
-module.exports = Wallets
+var Wallet = mongoose.model('wallet', walletSchema)
+module.exports = Wallet

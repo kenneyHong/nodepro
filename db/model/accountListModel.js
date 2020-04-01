@@ -1,7 +1,7 @@
 // 账户列表
 const mongoose = require("mongoose");
 
-var accountListSchema = new mongoose.Schema({
+var accountlistSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -13,15 +13,15 @@ var accountListSchema = new mongoose.Schema({
   LastOpenTime: {
     type: Number,
     default: new Date().getTime()
-  },
+  }, // 开户时间
   CharacterType: {
     type: Number,
     default: 2101,
-  },
+  }, // 商户类型
   BankEcode: {
     type: String,
     default: '123444422221'
-  },
+  }, // 
   CompanyCode: {
     type: String,
     default: 'lcb-001'
@@ -83,5 +83,5 @@ var accountListSchema = new mongoose.Schema({
     default: '0'
   }
 })
-var AccountList = mongoose.model('accountList', accountListSchema)
+var AccountList = mongoose.model('accountlist', accountlistSchema)
 module.exports = AccountList

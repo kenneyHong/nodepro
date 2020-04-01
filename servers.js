@@ -18,17 +18,19 @@ app.all('*', function(req, res, next) {
   res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
   if(req.url.indexOf('/user') === -1) {
     if(req.headers['access-token'] == '' || req.headers['access-token'] == 'undefined') {
-      res.send(sendError('用户未登录'))
+      res.send(sendMessage('用户未登录', 'SIGNATURE'))
       return
     }
     let jwt = new JwtUtil(req.headers['access-token']);
     let token = jwt.verifyToken();
-    if(token == 'err') {
-      res.send(sendError('用户未登录'));
-      return
-    } else {
-      next();
-    }
+    console.log(token)
+    next();
+    // if(token == 'err') {
+    //   res.send(sendMessage('用户未登录', 'SIGNATURE'));
+    //   return
+    // } else {
+    //   next();
+    // }
   } else {
     next();
   }

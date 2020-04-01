@@ -1,4 +1,4 @@
-// 电子钱包
+// 提现申请
 const mongoose = require("mongoose");
 
 var withdrawApplySchema = new mongoose.Schema({
@@ -45,7 +45,10 @@ var withdrawApplySchema = new mongoose.Schema({
   },
   FundOrderState: {
     type: String
-  } // 提现单状态(枚举 FundCasheOrderBasicState)
+  }, // 提现单状态(枚举 FundCasheOrderBasicState)
+  AuditRules: {
+    type: Number
+  }, // 审核规则(枚举 SettingFlowSwitchType)
 })
-var withdrawApply = mongoose.model('withdrawApply', withdrawApplySchema)
-module.exports = withdrawApply
+var WithdrawApply = mongoose.model('withdrawApply', withdrawApplySchema)
+module.exports = WithdrawApply

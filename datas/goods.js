@@ -10,11 +10,11 @@ const goodsData = {
   State: 5,
 }
 const accountList = {
+  name: 'name',
   CapitalCode: '1929818000154030',  // 资金账号
   AccountName: '忆想投资股份有限公司', // 户名
   BankEcode: '99112111374200201910024671', // 银行电子账号
-  LastOpenTime: '2019-10-25 17:54', // 开户时间
-  CharacterType: '珠宝公司', // 商户类型
+  CharacterType: 2101, // 商户类型
   CompanyCode: 'thinker', // 公司编码
   CompanyName: 'thinker', //公司名称
   StoreCode: '', // 门店编码
@@ -31,7 +31,7 @@ const accountList = {
   SubLock: 1000, // 总金额
   BaseLock: 600, // 基本账户
   OpLock: 400, // 运营账户
-  State: 1, // 账户状态
+  State: '1', // 账户状态
 }
 const accountDeteil = {
   CapitalCode: '1929818000154030',  // 资金账号
@@ -54,8 +54,18 @@ const accountDeteil = {
   SubbkName: '华夏银行北京分行营业部',  // 归属支行名称
   Logs: '[{"userId":1,"userName":"莫今维","characterType":3001,"operation":"审核通过","operationType":1,"note":"","logTime":"2020-01-03 16:55:21"},{"userId":1,"userName":"莫今维","characterType":3001,"operation":"开户失败(报文格式错误[身份证号码格式不正确])","operationType":1,"note":"","logTime":"2020-01-03 16:55:21"},{"userId":1,"userName":"莫今维","characterType":3001,"operation":"重新开户审核通过","operationType":1,"note":"","logTime":"2020-01-03 16:56:05"},{"userId":1,"userName":"莫今维","characterType":3001,"operation":"开户失败(报文格式错误[身份证号码格式不正确])","operationType":1,"note":"","logTime":"2020-01-03 16:56:05"},{"userId":1,"userName":"莫今维","characterType":3001,"operation":"重新开户审核通过","operationType":1,"note":"","logTime":"2020-01-03 16:56:43"}]'  // 操作日志
 }
+const walletList = {
+  name: 'name',
+  AccountName: '忆想投资股份有限公司', // 户名
+  Idcard: '4405821994xxxxxxxx',
+  Mobile: '13415123219',
+  Email: '111@qq.com',
+  PayPassword: '123123123'
+}
+
 module.exports = {
   goodsData,
   accountList,
-  accountDeteil
+  accountDeteil,
+  walletList
 }
