@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const AccountList = require('../db/model/accountListModel')
 const Wallet = require('../db/model/walletModel')
+const bankCard = require('../db/model/bankCardModel')
 const { sendError, sendCorrect } = require('../confings/utilities');
 const { walletList, accountList, accountDeteil } = require('../datas/goods');
 
@@ -118,7 +119,7 @@ router.get('/getAccountList', (req, res, next) => {
 })
 
 /**
- * @api {get} /clearing/getAccountList 电子钱包列表
+ * @api {get} /clearing/getAccountList 电子钱包开户申请
  * @apiName /clearing/getAccountList/
  * @apiGroup Wallet
  *
@@ -269,10 +270,170 @@ router.post('/openAccountWallet', (req, res, next) => {
     }
   }
   Wallet.insertMany(walletList).then(result => {
-    console.log(result)
+    res.send(sendCorrect('开通成功'));
+  }).catch(err => {
+    res.send(sendError('创建失败', err));
+  })
+})
+
+/**
+ * @api {post} /clearing/rechargeAccount 充值
+ * @apiName /clearing/rechargeAccount/
+ * @apiGroup Wallet
+ *
+ * @apiParam {String} Amount *充值金额
+ * @apiParam {String} PaymentType *充值方式(枚举PaymentType)
+ * 
+ */
+// SubSumed 账户余额(总金额)
+// BaseSumed 账户余额(基本账户)
+// OpSumed 账户余额(运营账户)
+router.post('/rechargeAccount', () => {
+  const data = req.body
+  const amount = Number(data.Amount)
+  if(amount < 2000) {
+    return res.send(sendError('充值金额不能小于2000'));
+  }
+  if(!data.PaymentType) {
+    return res.send(sendError('请选择充值方式'));
+  }
+  if(data.PaymentType == 17) {
+    AccountList.findOneAndUpdate(
+      { name: 'name', BaseSumed: { $gte: amount}},
+      { $inc: {
+          OpSumed: amount,
+          BaseSumed: -amount
+        }
+      }
+    ).then(res => {
+      res.send(sendCorrect('充值成功'));
+    }).catch(err => {
+      res.send(sendError('充值失败'));
+    })
+  } else {
+    AccountList.findOneAndUpdate(
+      { name: 'name' },
+      { $inc: {
+          SubSumed: data.Amount,
+          BaseSumed: data.Amount
+        }
+      }
+    ).then(res => {
+      res.send(sendCorrect('充值成功'));
+    }).catch(err => {
+      res.send(sendError('充值失败'));
+    })
+  }
+})
+
+/**
+ * @api {post} /clearing/bindBankCard 绑定银行卡
+ * @apiName /clearing/bindBankCard/
+ * @apiGroup Wallet
+ *
+ * @apiParam {String} AccountName *开户名称
+ * @apiParam {String} BankId *银行
+ * @apiParam {String} AccountCode *卡号
+ * @apiParam {String} ProvId *开户省份
+ * @apiParam {String} CityId *开户市区
+ * @apiParam {String} Fqhho *开户网点
+ * @apiParam {String} Mobile *手机
+ * 
+ */
+router.post('/bindBankCard', () => {
+  const data = req.body
+  if(!data.AccountName) {
+    return res.send(sendError('请输入开户名称'));
+  }
+  if(!data.BankId) {
+    return res.send(sendError('请选择银行'));
+  }
+  if(!data.AccountCode) {
+    return res.send(sendError('请输入卡号'));
+  }
+  if(!data.ProvId) {
+    return res.send(sendError('请选择开户省份'));
+  }
+  if(!data.CityId) {
+    return res.send(sendError('请选择开户市区'));
+  }
+  if(!data.Fqhho) {
+    return res.send(sendError('请选择开户网点'));
+  }
+  // if(!data.Mobile) {
+  //   return res.send(sendError('请输入银行预留手机号'));
+  // }
+  bankCard.insertMany(data).then(result => {
     res.send(sendCorrect('创建成功'));
   }).catch(err => {
-    console.log(err)
+    res.send(sendError('创建失败', err));
+  })
+})
+
+/**
+ * @api {post} /clearing/updateBankCard 更改绑定银行卡
+ * @apiName /clearing/updateBankCard/
+ * @apiGroup Wallet
+ *
+ * @apiParam {String} BankId *银行
+ * @apiParam {String} AccountCode *卡号
+ * @apiParam {String} ProvId *开户省份
+ * @apiParam {String} CityId *开户市区
+ * @apiParam {String} Fqhho *开户网点
+ * @apiParam {String} Mobile *手机
+ * 
+ */
+router.post('/updateBankCard', () => {
+  const data = req.body
+  if(!data.BankId) {
+    return res.send(sendError('请选择银行'));
+  }
+  if(!data.AccountCode) {
+    return res.send(sendError('请输入卡号'));
+  }
+  if(!data.ProvId) {
+    return res.send(sendError('请选择开户省份'));
+  }
+  if(!data.CityId) {
+    return res.send(sendError('请选择开户市区'));
+  }
+  if(!data.Fqhho) {
+    return res.send(sendError('请选择开户网点'));
+  }
+  // if(!data.Mobile) {
+  //   return res.send(sendError('请输入银行预留手机号'));
+  // }
+  bankCard.findOneAndUpdate({ name: 'name' }, {
+    BankId: data.BankId,
+    AccountCode: data.AccountCode,
+    ProvId: data.ProvId,
+    CityId: data.CityId,
+    Fqhho: data.Fqhho
+  }).then(result => {
+    res.send(sendCorrect('创建成功'));
+  }).catch(err => {
+    res.send(sendError('创建失败', err));
+  })
+})
+
+/**
+ * @api {post} /clearing/getBankCard 获取银行卡信息
+ * @apiName /clearing/getBankCard/
+ * @apiGroup Wallet
+ *
+ * @apiSuccess {String} BankId 开户名称
+ * @apiSuccess {String} BankId 银行
+ * @apiSuccess {String} AccountCode 卡号
+ * @apiSuccess {String} ProvId 开户省份
+ * @apiSuccess {String} CityId 开户市区
+ * @apiSuccess {String} Fqhho 开户网点
+ * @apiSuccess {String} Mobile 手机
+ * 
+ */
+router.post('/getBankCard', () => {
+  bankCard.findOne({ name: 'name' }).then(result => {
+    res.send(sendCorrect('', result));
+  }).catch(err => {
     res.send(sendError('创建失败', err));
   })
 })

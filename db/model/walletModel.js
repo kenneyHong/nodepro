@@ -56,16 +56,16 @@ var walletSchema = new mongoose.Schema({
   CityId: {
     type: String
   }, // 市编号
-  ProvinceId: {
+  AreaId: {
     type: String
   }, // 区编号
-  TownName: {
+  ProvinceName: {
     type: String
   }, // 省
   CityName: {
     type: String
   }, // 市
-  TownName: {
+  AreaName: {
     type: String
   }, // 区
   Address: {

@@ -44,10 +44,14 @@ var rechargeRecordSchema = new mongoose.Schema({
     type: String,
     default: '0'
   }, // 金额
-  Balance: {
+  BasicBalance: {
     type: String,
     default: '0'
-  }, // 余额
+  }, // 基本余额
+  OperationBalance: {
+    type: String,
+    default: '0'
+  }, // 运营余额
   ServeFee: {
     Type: Number,
     default: 0

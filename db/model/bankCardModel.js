@@ -15,7 +15,7 @@ var bankCardSchema = new mongoose.Schema({
     required: true
   }, // 银行
   AccountCode: {
-    type: Number,
+    type: String,
     required: true
   }, // 卡号
   ProvId: {
@@ -32,7 +32,6 @@ var bankCardSchema = new mongoose.Schema({
   }, // 开户网点
   Mobile: {
     type: String,
-    required: true
   },  // 手机
   EwalletType: {
     type: String,

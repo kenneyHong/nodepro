@@ -77,7 +77,7 @@ var accountlistSchema = new mongoose.Schema({
   State: {
     type: String,
     default: '1'
-  },
+  }, // 开通状态
   EwalletType: {
     type: String,
     default: '0'
