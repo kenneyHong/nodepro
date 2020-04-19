@@ -72,7 +72,7 @@ router.post('/registered', function(req, res, next) {
       User.insertMany({name: req.body.name, password}).then(() => {
         const jwt = new JwtUtil(req.body.name);
         const token = jwt.generateToken();
-        res.send(sendCorrect('注册成功', { token }))
+        res.send(sendCorrect('注册成功', { token, name: req.body.name }))
       }).catch(() => {
         res.send(sendError('注册失败'))
       })
@@ -130,7 +130,7 @@ router.post('/login', (req, res, next) => {
       if(items[0].password == password) {
         let jwt = new JwtUtil(req.body.name);
         let token = jwt.generateToken();
-        res.send(sendCorrect('登陆成功', { token }));
+        res.send(sendCorrect('登陆成功', { token, name: req.body.name }));
       } else {
         res.send(sendError('账号或者密码错误'));
       }
