@@ -73,7 +73,6 @@ var walletSchema = new mongoose.Schema({
   }, // 详细地址
   PayPassword: {
     type: String,
-    required: true
   }, // 支付密码
   EwalletState: {
     type: String,

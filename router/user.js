@@ -143,5 +143,29 @@ router.post('/login', (req, res, next) => {
   // jsencrypt.setPrivateKey(prvKey)
   // let password = jsencrypt.decrypt(req.body.password);
 })
+/**
+ * @api {get} /user/getState  获取用户状态
+ * @apiName /user/getState/
+ * @apiGroup User
+ *
+ * @apiSuccess {String} name  用户名
+ * @apiSuccess {String} WalletState  电子钱包开通状态 枚举(EwalletMasterState)
+ * @apiSuccess {String} CharacterType  商户类型
+ * @apiSuccess {String} EwalletCashbindState  电子钱包的提现绑卡的状态 枚举(EwalletCashbindState)
 
+ * 
+ */
+router.get('/getState', (req, res, next) => {
+  findUser({name: '555'}).then(items => {
+    if(items.length) {
+      const obj = {
+        name: items[0].name,
+        WalletState: items[0].WalletState,
+        CharacterType: items[0].CharacterType,
+        EwalletCashbindState: items[0].EwalletCashbindState,
+      }
+      res.send(sendCorrect('', obj))
+    }
+  })
+})
 module.exports = router

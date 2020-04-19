@@ -10,8 +10,8 @@ var userSchema = new mongoose.Schema({
     type: String,
     required: true
   }, // 密码
-  walletState: {
-    type: String,
+  WalletState: {
+    type: Number,
     default: 1
   }, // 电子钱包开通状态
   CharacterType: {

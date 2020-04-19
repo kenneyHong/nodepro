@@ -8,7 +8,7 @@ const app = express();
 const bodyParser = require('body-parser');  // 解密
 const JwtUtil = require('./jwt');
 const cors = require("cors");
-const { sendError, sendCorrect } = require('./confings/utilities');
+const { sendMessage } = require('./confings/utilities');
 const db = require('./db/connect')
 // const { goodsData, accountList, accountDeteil } = require('./datas/goods');
 app.use(cors(), bodyParser());

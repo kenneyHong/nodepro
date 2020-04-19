@@ -3,6 +3,7 @@ const router = express.Router();
 const AccountList = require('../db/model/accountListModel')
 const Wallet = require('../db/model/walletModel')
 const bankCard = require('../db/model/bankCardModel')
+const User = require('../db/model/userModel')
 const { sendError, sendCorrect } = require('../confings/utilities');
 const { walletList, accountList, accountDeteil } = require('../datas/goods');
 
@@ -119,8 +120,8 @@ router.get('/getAccountList', (req, res, next) => {
 })
 
 /**
- * @api {get} /clearing/getAccountList 电子钱包开户申请
- * @apiName /clearing/getAccountList/
+ * @api {get} /clearing/getOpenList 电子钱包开户申请
+ * @apiName /clearing/getOpenList/
  * @apiGroup Wallet
  *
  * @apiParam {String} PetitionCode 单据编号
@@ -167,7 +168,7 @@ router.get('/getAccountList', (req, res, next) => {
  * @apiSuccess {String} EwalletState 申请单状态(枚举 EwalletState)
  * 
  */
-router.get('/getAccountList', (req, res, next) => {
+router.get('/getOpenList', (req, res, next) => {
   const query = req.query
   if(!query.OrderBy) {
     return res.send(sendError('OrderBy必传'));
@@ -236,8 +237,8 @@ router.get('/getAccountList', (req, res, next) => {
  * 
  */
 router.post('/openAccountWallet', (req, res, next) => {
-  const data = req.body
-  if(data.EwalletType != 1 || data.EwalletType != 3) {
+  const data = req.query
+  if(data.EwalletType != '1' && data.EwalletType != '3') {
     return res.send(sendError('请选择账户类型'));
   }
   if(data.Mobile == 0 || data.Mobile == '') {
@@ -269,8 +270,13 @@ router.post('/openAccountWallet', (req, res, next) => {
       return res.send(sendError('请输入详细地址'));
     }
   }
-  Wallet.insertMany(walletList).then(result => {
-    res.send(sendCorrect('开通成功'));
+  data.name = '555'
+  Wallet.insertMany(data).then(result => {
+    User.findOneAndUpdate({
+      name: '555'
+    }, {WalletState: 3}).then(items => {
+      res.send(sendCorrect('开通成功'));
+    })
   }).catch(err => {
     res.send(sendError('创建失败', err));
   })
@@ -289,7 +295,7 @@ router.post('/openAccountWallet', (req, res, next) => {
 // BaseSumed 账户余额(基本账户)
 // OpSumed 账户余额(运营账户)
 router.post('/rechargeAccount', () => {
-  const data = req.body
+  const data = req.query
   const amount = Number(data.Amount)
   if(amount < 2000) {
     return res.send(sendError('充值金额不能小于2000'));
@@ -340,8 +346,8 @@ router.post('/rechargeAccount', () => {
  * @apiParam {String} Mobile *手机
  * 
  */
-router.post('/bindBankCard', () => {
-  const data = req.body
+router.post('/bindBankCard', (req, res, next) => {
+  const data = req.query
   if(!data.AccountName) {
     return res.send(sendError('请输入开户名称'));
   }
@@ -383,8 +389,8 @@ router.post('/bindBankCard', () => {
  * @apiParam {String} Mobile *手机
  * 
  */
-router.post('/updateBankCard', () => {
-  const data = req.body
+router.post('/updateBankCard', (req, res, next) => {
+  const data = req.query
   if(!data.BankId) {
     return res.send(sendError('请选择银行'));
   }
@@ -430,7 +436,7 @@ router.post('/updateBankCard', () => {
  * @apiSuccess {String} Mobile 手机
  * 
  */
-router.post('/getBankCard', () => {
+router.post('/getBankCard', (req, res, next) => {
   bankCard.findOne({ name: 'name' }).then(result => {
     res.send(sendCorrect('', result));
   }).catch(err => {
