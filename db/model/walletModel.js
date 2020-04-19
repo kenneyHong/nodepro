@@ -75,8 +75,8 @@ var walletSchema = new mongoose.Schema({
     type: String,
   }, // 支付密码
   EwalletState: {
-    type: String,
-    default: '1'
+    type: Number,
+    default: 1
   }, // 账户状态(枚举 EwalletMasterState)
   EwalletType: {
     type: String,
@@ -105,8 +105,8 @@ var walletSchema = new mongoose.Schema({
     type: String
   }, // 审核人
   TuneOrderState: {
-    type: String,
-    default: '3'
+    type: Number,
+    default: 3
   } // 申请单状态(枚举 TunePetitionOrderBasicState)
 })
 var Wallet = mongoose.model('wallet', walletSchema)

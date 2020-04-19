@@ -156,7 +156,7 @@ router.post('/login', (req, res, next) => {
  * 
  */
 router.get('/getState', (req, res, next) => {
-  findUser({name: '555'}).then(items => {
+  findUser({name: req.headers['name']}).then(items => {
     if(items.length) {
       const obj = {
         name: items[0].name,
@@ -165,6 +165,8 @@ router.get('/getState', (req, res, next) => {
         EwalletCashbindState: items[0].EwalletCashbindState,
       }
       res.send(sendCorrect('', obj))
+    } else {
+      res.send(sendError('获取用户失败'))
     }
   })
 })

@@ -270,12 +270,12 @@ router.post('/openAccountWallet', (req, res, next) => {
       return res.send(sendError('请输入详细地址'));
     }
   }
-  data.name = '555'
+  data.name = req.headers['name']
   Wallet.insertMany(data).then(result => {
     User.findOneAndUpdate({
-      name: '555'
+      name: req.headers['name']
     }, {WalletState: 3}).then(items => {
-      res.send(sendCorrect('开通成功'));
+      res.send(sendCorrect('操作成功'));
     })
   }).catch(err => {
     res.send(sendError('创建失败', err));
@@ -305,7 +305,7 @@ router.post('/rechargeAccount', () => {
   }
   if(data.PaymentType == 17) {
     AccountList.findOneAndUpdate(
-      { name: 'name', BaseSumed: { $gte: amount}},
+      { name: req.headers['name'], BaseSumed: { $gte: amount}},
       { $inc: {
           OpSumed: amount,
           BaseSumed: -amount
@@ -369,6 +369,7 @@ router.post('/bindBankCard', (req, res, next) => {
   // if(!data.Mobile) {
   //   return res.send(sendError('请输入银行预留手机号'));
   // }
+  data.name = req.headers['name']
   bankCard.insertMany(data).then(result => {
     res.send(sendCorrect('创建成功'));
   }).catch(err => {
@@ -409,7 +410,7 @@ router.post('/updateBankCard', (req, res, next) => {
   // if(!data.Mobile) {
   //   return res.send(sendError('请输入银行预留手机号'));
   // }
-  bankCard.findOneAndUpdate({ name: 'name' }, {
+  bankCard.findOneAndUpdate({ name: req.headers['name'] }, {
     BankId: data.BankId,
     AccountCode: data.AccountCode,
     ProvId: data.ProvId,
@@ -437,10 +438,27 @@ router.post('/updateBankCard', (req, res, next) => {
  * 
  */
 router.post('/getBankCard', (req, res, next) => {
-  bankCard.findOne({ name: 'name' }).then(result => {
+  bankCard.findOne({ name: req.headers['name'] }).then(result => {
     res.send(sendCorrect('', result));
   }).catch(err => {
-    res.send(sendError('创建失败', err));
+    res.send(sendError('获取失败', err));
+  })
+})
+/**
+ * @api {post} /clearing/openAccountAudit 电子钱包开户申请审核
+ * @apiName /clearing/openAccountAudit/
+ * @apiGroup Wallet
+ * 
+ * @apiSuccess {String} PetitionCode 单据编号
+ */
+router.get('/openAccountAudit', (req, res, next) => {
+    const query = req.query
+    Wallet.findOneAndUpdate({ PetitionCode: query.PetitionCode }, { EwalletState: 5, TuneOrderState: 5 }).then(item => {
+      User.findOneAndUpdate({ name: item.name }, { WalletState: 5 }).then(items　=> {
+        res.send(sendCorrect('审核成功'));
+      })
+    }).catch(err => {
+    res.send(sendError('审核失败', err));
   })
 })
 
