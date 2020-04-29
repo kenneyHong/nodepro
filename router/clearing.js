@@ -4,6 +4,9 @@ const AccountList = require('../db/model/accountListModel')
 const Wallet = require('../db/model/walletModel')
 const bankCard = require('../db/model/bankCardModel')
 const User = require('../db/model/userModel')
+const BasicFlow = require('../db/model/basicFlowModel')
+const opFlow = require('../db/model/opFlowModel')
+const BankCard = require('../db/model/bankCardModel')
 const { sendError, sendCorrect } = require('../confings/utilities');
 const { walletList, accountList, accountDeteil } = require('../datas/goods');
 
@@ -294,7 +297,7 @@ router.post('/openAccountWallet', (req, res, next) => {
 // SubSumed 账户余额(总金额)
 // BaseSumed 账户余额(基本账户)
 // OpSumed 账户余额(运营账户)
-router.post('/rechargeAccount', () => {
+router.post('/rechargeAccount', (req, res, next) => {
   const data = req.query
   const amount = Number(data.Amount)
   if(amount < 2000) {
@@ -303,33 +306,65 @@ router.post('/rechargeAccount', () => {
   if(!data.PaymentType) {
     return res.send(sendError('请选择充值方式'));
   }
-  if(data.PaymentType == 17) {
-    AccountList.findOneAndUpdate(
-      { name: req.headers['name'], BaseSumed: { $gte: amount}},
-      { $inc: {
-          OpSumed: amount,
-          BaseSumed: -amount
-        }
+  new Promise((resolve, reject) => {
+    const bankCard = BankCard.findOne({name: req.headers['name']})
+    if(bankCard) {
+      resolve(bankCard)
+    } else {
+      reject('未绑卡')
+    }
+  })
+  .then(relve => {
+    let insert
+    let term
+    if(data.PaymentType == 17) {
+      insert = {
+        OpSumed: amount,
+        BaseSumed: -amount
       }
-    ).then(res => {
-      res.send(sendCorrect('充值成功'));
+      term = { name: req.headers['name'], BaseSumed: { $gte: amount}}
+    } else {
+      term = { name: req.headers['name'] }
+      insert = {
+        SubSumed: data.Amount,
+        BaseSumed: data.Amount - (data.Amount * 0.01)
+      }
+    }
+    AccountList.findOneAndUpdate( term, { $inc: insert } ).then(rel => {
+      if(data.PaymentType == 17) {
+        BasicFlow.insertMany({
+          name: res.headers['name'],
+          AccountName: relve.AccountName,
+          Amount: data.Amount,
+          Balance: rel.BaseSumed,
+          PayAmount: amount,
+          LogType: 3,
+        })
+        opFlow.insertMany({
+          name: res.headers['name'],
+          Balance: rel.OpSumed,
+          PayAmount: amount,
+          LogType: 1,
+        })
+        res.send(sendCorrect('充值成功'));
+      } else {
+        BasicFlow.insertMany({
+          name: res.headers['name'],
+          AccountName: relve.AccountName,
+          Amount: amount - (data.Amount * 0.01),
+          Balance: rel.BaseSumed,
+          ServeFee: data.Amount * 0.01,
+          PayAmount: amount,
+          LogType: 1,
+        })
+        res.send(sendCorrect('充值成功'));
+      }
     }).catch(err => {
       res.send(sendError('充值失败'));
     })
-  } else {
-    AccountList.findOneAndUpdate(
-      { name: 'name' },
-      { $inc: {
-          SubSumed: data.Amount,
-          BaseSumed: data.Amount
-        }
-      }
-    ).then(res => {
-      res.send(sendCorrect('充值成功'));
-    }).catch(err => {
-      res.send(sendError('充值失败'));
-    })
-  }
+  }).catch(err => {
+    res.send(sendError(err))
+  })
 })
 
 /**
@@ -415,7 +450,8 @@ router.post('/updateBankCard', (req, res, next) => {
     AccountCode: data.AccountCode,
     ProvId: data.ProvId,
     CityId: data.CityId,
-    Fqhho: data.Fqhho
+    Fqhho: data.Fqhho,
+    Mobile: data.Mobile
   }).then(result => {
     res.send(sendCorrect('创建成功'));
   }).catch(err => {
@@ -459,6 +495,24 @@ router.get('/openAccountAudit', (req, res, next) => {
       })
     }).catch(err => {
     res.send(sendError('审核失败', err));
+  })
+})
+
+/**
+ * @api {post} /clearing/openAccountAbandon 电子钱包开户申请作废
+ * @apiName /clearing/openAccountAbandon/
+ * @apiGroup Wallet
+ * 
+ * @apiSuccess {String} PetitionCode 单据编号
+ */
+router.get('/openAccountAbandon', (req, res, next) => {
+  const query = req.query
+  Wallet.findOneAndUpdate({ PetitionCode: query.PetitionCode }, { EwalletState: 9, TuneOrderState: 9 }).then(item => {
+    User.findOneAndUpdate({ name: item.name }, { WalletState: 9 }).then(items　=> {
+      res.send(sendCorrect('作废成功'));
+    })
+  }).catch(err => {
+    res.send(sendError('作废失败', err));
   })
 })
 

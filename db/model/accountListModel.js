@@ -41,15 +41,15 @@ var accountlistSchema = new mongoose.Schema({
   SubSumed: {
     type: Number,
     default: 0
-  },
+  }, // 账户余额(总金额)
   BaseSumed: {
     type: Number,
     default: 0
-  },
+  }, // 账户余额(基本账户)
   OpSumed: {
     type: Number,
     default: 0
-  },
+  }, // 账户余额(运营账户)
   SubValid: {
     type: Number,
     default: 0

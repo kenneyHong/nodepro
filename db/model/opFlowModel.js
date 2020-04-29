@@ -1,7 +1,7 @@
 // 流水 
 const mongoose = require("mongoose");
 
-var basicFlowSchema = new mongoose.Schema({
+var opFlowSchema = new mongoose.Schema({
   FlowNumber: {
     type: String,
     default: `BSLS${new Date().getTime()}`
@@ -9,14 +9,7 @@ var basicFlowSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-  },  // 用户名
-  AccountName: {
-    type: String,
-    required: true
-  }, // 户名
-  CapitalCode: {
-    type: String
-  }, // 资金账号
+  },  // 操作人
   CreateTime: {
     type: Number,
     default: new Date().getTime()
@@ -40,13 +33,6 @@ var basicFlowSchema = new mongoose.Schema({
   CheckTime: {
     type: Number
   }, // 操作时间
-  CheckUser: {
-    type: String
-  }, // 操作人
-  Amount: {
-    type: Number,
-    default: 0
-  }, // 金额
   Balance: {
     type: Number,
     default: 0
@@ -63,17 +49,12 @@ var basicFlowSchema = new mongoose.Schema({
     type: String
   }, // 来源(枚举 EwalletLogSourceType)
   PayAmount: {
-    type: String,
-    default: '0'
-  }, // 交易金额
-  ServeFee: {
-    Type: Number,
+    type: Number,
     default: 0
-  }, // 服务费
+  }, // 金额
   Note: {
     type: String
   }, // 备注
-  
 })
-var BasicFlow = mongoose.model('basicFlow', basicFlowSchema)
-module.exports = BasicFlow
+var OpFlow = mongoose.model('opFlow', opFlowSchema)
+module.exports = OpFlow
